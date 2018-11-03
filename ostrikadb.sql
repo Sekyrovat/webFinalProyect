@@ -61,7 +61,7 @@ CREATE TABLE `product` (
   `pName` tinytext COMMENT 'Name of the product',
   `pDesccription` text COMMENT 'Description of the product ',
   `pPrice` int(10) UNSIGNED ZEROFILL DEFAULT NULL COMMENT 'Price in pesos of the product',
-  `pPictures` tinytext COMMENT 'Link to the image in the filesystem',
+  `pPicture` tinytext COMMENT 'Link to the image in the filesystem',
   `category` tinytext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin2 COMMENT='Table to contain the info of the products.';
 

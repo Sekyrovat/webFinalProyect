@@ -1,10 +1,11 @@
 <?php
 	
+	# Done
 	function connect(){
 		$servername = "localhost";
 	    $username = "root";
 	    $password = "";
-	    $dbname = "weblab";
+	    $dbname = "ostrikadb";
 	    $connection = new mysqli($servername, $username, $password, $dbname);
 	    if ($connection->connect_error) {
 	    	return null;
@@ -16,11 +17,10 @@
 	    	return $connection;
 	    }
 	}
+	# Done
 	/**
 	 * Attempt to login the user.
 	 *
-	 * @param String $username
-	 *  Username proposed by the user.
 	 * @param String $userFiName
 	 *  User's First name.
 	 * @param String $userLaName
@@ -29,10 +29,6 @@
 	 *  User's email.
 	 * @param String $userPwd
 	 *  Password given by the user.
-	 * @param String $userGender
-	 *  User's gender.
-	 * @param String $userCountry
-	 *  User's current country.
 	 * @return Array status and code
 	 * Status 				-> Code 
 	 *  Ok, aka success		 -> 200
@@ -40,27 +36,22 @@
 	 *  Invalid combination. -> 409
 	 *  Bad connection. 	 -> 500
 	 */
-	function attemptRegistration($username, $userFiName, $userLaName, $userEmail, $userPwd, $userGender, $userCountry)
+	function attemptRegistration($userFiName, $userLaName, $userEmail, $userPwd)
 	{
 		$conn = connect();
 		if ($conn) 
 		{
-			if (userName_exits($username)) 
-			{
-				$conn -> close();
-				return array('status' => "Username already registered", "code" => 409);
-			}
-			elseif (userEmail_exits($userEmail)) 
+			if (userEmail_exits($userEmail)) 
 			{
 			 	$conn -> close();
 				return array('status' => "Email already registered", "code" => 409);
 			}
 			else
 			{
-				$query = "INSERT INTO useraccounts (username, userFiName, userLaName, userEmail, userPwd, userGender, userCountry)
-				VALUES (?, ?, ?, ?, ?, ?, ?)";
+				$query = "INSERT INTO account (fName, lName, Email, pwd)
+				VALUES (?, ?, ?, ?)";
 				$prepared_stmt = $conn->prepare($query);
-				$prepared_stmt->bind_param("sssssss", $username, $userFiName, $userLaName, $userEmail, $userPwd, $userGender, $userCountry);
+				$prepared_stmt->bind_param("ssss", $userFiName, $userLaName, $userEmail, $userPwd);
 			    if ($prepared_stmt->execute()) 
 			    {
 			        $conn -> close();
@@ -78,6 +69,185 @@
 			return array('status' => "Internal server error", "code" => 500);
 		}
 	}
+	# Done
+	/**
+	 * Attempt to login the user.
+	 *
+	 * @param String $userEmail
+	 *  Email proposed by the user.
+	 * @param String $pwd
+	 *  Password given by the user.
+	 *
+	 * @return Array status and code
+	 * Status 				-> Code 
+	 *  Ok, aka success		 -> 200
+	 *  User not found.		 -> 406
+	 *  Invalid combination. -> 409
+	 *  Bad connection. 	 -> 500
+	 */
+	function attemptLogin($userEmail, $pwd)
+	{
+		$conn = connect();
+		if ($conn) 
+		{
+			if (userEmail_exits($userEmail)) 
+			{
+				$conn -> close();
+				return array('status' => "User not found", "code" => 406);
+			} 
+			else 
+			{
+				$query = "SELECT id
+						  FROM account 
+						  WHERE Email = ? AND pwd = ?";
+				$prepared_stmt = $conn -> prepare($query);
+				$prepared_stmt -> bind_param( 'ss', $userEmail, $pwd );
+				if ($prepared_stmt -> execute()) 
+				{
+					$prepared_stmt -> store_result();
+					$prepared_stmt ->bind_result($uId);
+					$prepared_stmt -> fetch();
+					$prepared_stmt -> close();
+					$conn -> close();
+					return array('status' => 'success', 'code' => 200, 'response' => $uId);
+				} 
+				else
+				{
+					$conn -> close();
+					return array('status' => 'Invalid user password combination', 'code' => 409);
+				}
+			}
+		}
+		else
+		{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
+	# Done
+	function getProyects()
+	{
+		$conn = connect();
+		if ($conn) 
+		{
+			$query = "SELECT proyect.id, proyect.name, proyect.description, proyect.category, pics.idproyect, pics.type, pics.linkToPic FROM proyect INNER JOIN picsofproyects as pics ON proyect.id = pics.idproyect";
+			$prepared_stmt = $conn -> prepare($query);
+			if ($prepared_stmt -> execute()) 
+			{
+				$result = $prepared_stmt->get_result();
+				    $arrOfProyects = array();
+				    while($row = mysqli_fetch_assoc($result)) 
+				    {
+				        $currentRow = array("proyectId" => $row["proyect.id"], "proyectName" => $row["proyect.name"], "proyectDescription" => $row["proyect.description"], "proyectCategory" => $row["proyect.category"], "picType" => $row["pics.type"], "linkToPic" => $row["pics.linkToPic"]);
+				        array_push($arrOfProyects, $currentRow);
+				    }
+				    return array('status' => "success", "code" => 200, 'response' => $arrOfProyects);
+			} 
+			else
+			{
+				$conn -> close();
+				return array('status' => 'Invalid user password combination', 'code' => 409);
+			}
+		}
+		else
+		{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+	# Done
+	function getProducts()
+	{
+		$conn = connect();
+		if ($conn) 
+		{
+			$query = "SELECT product.id, product.pName, product.pDescription, product.category, product.pPrice, product.pPicture FROM product;";
+			$prepared_stmt = $conn -> prepare($query);
+			if ($prepared_stmt -> execute()) 
+			{
+				$result = $prepared_stmt->get_result();
+				    $arrOfProducts = array();
+				    while($row = mysqli_fetch_assoc($result)) 
+				    {
+				        $currentRow = array("productId" => $row["product.id"], "productName" => $row["product.pName"], "productDescription" => $row["product.pDescription"], "productCategory" => $row["product.category"], "productPrice" => $row["product.pPrice"], "linkToPic" => $row["product.pPicture"]);
+				        array_push($arrOfProducts, $currentRow);
+				    }
+				    return array('status' => "success", "code" => 200, 'response' => $arrOfProducts);
+			} 
+			else
+			{
+				$conn -> close();
+				return array('status' => 'Invalid user password combination', 'code' => 409);
+			}
+		}
+		else
+		{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
+	# Done
+	function getProyectsByCategory($category)
+	{
+		$conn = connect();
+		if ($conn) 
+		{
+			$query = "SELECT proyect.id, proyect.name, proyect.description, proyect.category, pics.idproyect, pics.type, pics.linkToPic FROM proyect INNER JOIN picsofproyects as pics ON proyect.id = pics.idproyect WHERE proyect.category = ?";
+			$prepared_stmt = $conn -> prepare($query);
+			$prepared_stmt = $conn -> bindparam( 's', $category);
+			if ($prepared_stmt -> execute()) 
+			{
+				$result = $prepared_stmt->get_result();
+				    $arrOfProyects = array();
+				    while($row = mysqli_fetch_assoc($result)) 
+				    {
+				        $currentRow = array("proyectId" => $row["proyect.id"], "proyectName" => $row["proyect.name"], "proyectDescription" => $row["proyect.description"], "proyectCategory" => $row["proyect.category"], "picType" => $row["pics.type"], "linkToPic" => $row["pics.linkToPic"]);
+				        array_push($arrOfProyects, $currentRow);
+				    }
+				    return array('status' => "success", "code" => 200, 'response' => $arrOfProyects);
+			} 
+			else
+			{
+				$conn -> close();
+				return array('status' => 'Invalid user password combination', 'code' => 409);
+			}
+		}
+		else
+		{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+	# Done
+	function getProductsByCategory($category)
+	{
+		$conn = connect();
+		if ($conn) 
+		{
+			$query = "SELECT product.id, product.pName, product.pDescription, product.category, product.pPrice, product.pPicture FROM product WHERE product.category = ?;";
+			$prepared_stmt = $conn -> prepare($query);
+			$prepared_stmt = $conn -> bindparam( 's', $category);
+			if ($prepared_stmt -> execute()) 
+			{
+				$result = $prepared_stmt->get_result();
+				    $arrOfProducts = array();
+				    while($row = mysqli_fetch_assoc($result)) 
+				    {
+				        $currentRow = array("productId" => $row["product.id"], "productName" => $row["product.pName"], "productDescription" => $row["product.pDescription"], "productCategory" => $row["product.category"], "productPrice" => $row["product.pPrice"], "linkToPic" => $row["product.pPicture"]);
+				        array_push($arrOfProducts, $currentRow);
+				    }
+				    return array('status' => "success", "code" => 200, 'response' => $arrOfProducts);
+			} 
+			else
+			{
+				$conn -> close();
+				return array('status' => 'Invalid user password combination', 'code' => 409);
+			}
+		}
+		else
+		{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
 	/**
 	 * Function to create the first register of a friendship
 	 * before it is confirmed by the seconduser. Here we 
@@ -267,59 +437,6 @@
 			$stmt -> close();
 			$conn -> close();
 			return array('status' => 'Something went wrong while trying to add your friend.', 'code' => 409);
-			}
-		}
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
-		}
-	}
-	/**
-	 * Attempt to login the user.
-	 *
-	 * @param String $username
-	 *  Username proposed by the user.
-	 * @param String $pwd
-	 *  Password given by the user.
-	 *
-	 * @return Array status and code
-	 * Status 				-> Code 
-	 *  Ok, aka success		 -> 200
-	 *  User not found.		 -> 406
-	 *  Invalid combination. -> 409
-	 *  Bad connection. 	 -> 500
-	 */
-	function attemptLogin($username, $pwd)
-	{
-		$conn = connect();
-		if ($conn) 
-		{
-			if (userName_exits($username)) 
-			{
-				$conn -> close();
-				return array('status' => "User not found", "code" => 406);
-			} 
-			else 
-			{
-				$query = "SELECT userId 
-						FROM useraccounts 
-						WHERE username = ? AND userPwd = ?";
-				$prepared_stmt = $conn -> prepare($query);
-				$prepared_stmt -> bind_param( 'ss', $username, $pwd );
-				if ($prepared_stmt -> execute()) 
-				{
-					$prepared_stmt -> store_result();
-					$prepared_stmt ->bind_result($uId);
-					$prepared_stmt -> fetch();
-					$prepared_stmt -> close();
-					$conn -> close();
-					return array('status' => 'success', 'code' => 200, 'response' => $uId);
-				} 
-				else
-				{
-					$conn -> close();
-					return array('status' => 'Invalid user password combination', 'code' => 409);
-				}
 			}
 		}
 		else
