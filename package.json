@@ -1,0 +1,20 @@
+{
+  "name": "proyecto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sass/mystyles.scss",
+  "dependencies": {
+    "bulma-extensions": "^3.0.0"
+  },
+  "devDependencies": {
+    "bulma": "^0.7.2",
+    "node-sass": "^4.9.4"
+  },
+  "scripts": {
+    "css-build": "node-sass --omit-source-map-url sass/mystyles.scss css/mystyles.css",
+    "css-watch": "npm run css-build -- --watch",
+    "start": "npm run css-watch"
+  },
+  "author": "",
+  "license": "ISC"
+}
