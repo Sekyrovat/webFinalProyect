@@ -1,7 +1,6 @@
 <?php
-	
-	# Done
-	function connect(){
+	function connect()
+	{
 		$servername = "localhost";
 	    $username = "root";
 	    $password = "";
@@ -17,7 +16,7 @@
 	    	return $connection;
 	    }
 	}
-	# Done
+
 	/**
 	 * Attempt to login the user.
 	 *
@@ -69,7 +68,7 @@
 			return array('status' => "Internal server error", "code" => 500);
 		}
 	}
-	# Done
+
 	/**
 	 * Attempt to login the user.
 	 *
@@ -124,534 +123,381 @@
 		}
 	}
 
-	# Done
-	function getProyects()
-	{
+	function getProyectsByCategory($category){
 		$conn = connect();
-		if ($conn) 
-		{
-			$query = "SELECT proyect.id, proyect.name, proyect.description, proyect.category, pics.idproyect, pics.type, pics.linkToPic FROM proyect INNER JOIN picsofproyects as pics ON proyect.id = pics.idproyect";
-			$prepared_stmt = $conn -> prepare($query);
-			if ($prepared_stmt -> execute()) 
-			{
-				$result = $prepared_stmt->get_result();
-				    $arrOfProyects = array();
-				    while($row = mysqli_fetch_assoc($result)) 
-				    {
-				        $currentRow = array("proyectId" => $row["proyect.id"], "proyectName" => $row["proyect.name"], "proyectDescription" => $row["proyect.description"], "proyectCategory" => $row["proyect.category"], "picType" => $row["pics.type"], "linkToPic" => $row["pics.linkToPic"]);
-				        array_push($arrOfProyects, $currentRow);
-				    }
-				    return array('status' => "success", "code" => 200, 'response' => $arrOfProyects);
-			} 
-			else
-			{
-				$conn -> close();
-				return array('status' => 'Invalid user password combination', 'code' => 409);
-			}
-		}
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
-		}
-	}
-	# Done
-	function getProducts()
-	{
-		$conn = connect();
-		if ($conn) 
-		{
-			$query = "SELECT product.id, product.pName, product.pDescription, product.category, product.pPrice, product.pPicture FROM product;";
-			$prepared_stmt = $conn -> prepare($query);
-			if ($prepared_stmt -> execute()) 
-			{
-				$result = $prepared_stmt->get_result();
-				    $arrOfProducts = array();
-				    while($row = mysqli_fetch_assoc($result)) 
-				    {
-				        $currentRow = array("productId" => $row["product.id"], "productName" => $row["product.pName"], "productDescription" => $row["product.pDescription"], "productCategory" => $row["product.category"], "productPrice" => $row["product.pPrice"], "linkToPic" => $row["product.pPicture"]);
-				        array_push($arrOfProducts, $currentRow);
-				    }
-				    return array('status' => "success", "code" => 200, 'response' => $arrOfProducts);
-			} 
-			else
-			{
-				$conn -> close();
-				return array('status' => 'Invalid user password combination', 'code' => 409);
-			}
-		}
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
-		}
-	}
+		if ($conn) {
+			$query = "SELECT proyect.id, proyect.name, proyect.description
+					  FROM proyect
+					  WHERE proyect.category = ? AND proyect.isBeforeAfter = 0";
 
-	# Done
-	function getProyectsByCategory($category)
-	{
-		$conn = connect();
-		if ($conn) 
-		{
-			$query = "SELECT proyect.id, proyect.name, proyect.description, proyect.category, pics.idproyect, pics.type, pics.linkToPic FROM proyect INNER JOIN picsofproyects as pics ON proyect.id = pics.idproyect WHERE proyect.category = ?";
 			$prepared_stmt = $conn -> prepare($query);
 			$prepared_stmt = $conn -> bindparam( 's', $category);
-			if ($prepared_stmt -> execute()) 
-			{
-				$result = $prepared_stmt->get_result();
-				    $arrOfProyects = array();
-				    while($row = mysqli_fetch_assoc($result)) 
-				    {
-				        $currentRow = array("proyectId" => $row["proyect.id"], "proyectName" => $row["proyect.name"], "proyectDescription" => $row["proyect.description"], "proyectCategory" => $row["proyect.category"], "picType" => $row["pics.type"], "linkToPic" => $row["pics.linkToPic"]);
-				        array_push($arrOfProyects, $currentRow);
-				    }
-				    return array('status' => "success", "code" => 200, 'response' => $arrOfProyects);
-			} 
-			else
-			{
-				$conn -> close();
-				return array('status' => 'Invalid user password combination', 'code' => 409);
-			}
-		}
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
-		}
-	}
-	# Done
-	function getProductsByCategory($category)
-	{
-		$conn = connect();
-		if ($conn) 
-		{
-			$query = "SELECT product.id, product.pName, product.pDescription, product.category, product.pPrice, product.pPicture FROM product WHERE product.category = ?;";
-			$prepared_stmt = $conn -> prepare($query);
-			$prepared_stmt = $conn -> bindparam( 's', $category);
-			if ($prepared_stmt -> execute()) 
-			{
-				$result = $prepared_stmt->get_result();
-				    $arrOfProducts = array();
-				    while($row = mysqli_fetch_assoc($result)) 
-				    {
-				        $currentRow = array("productId" => $row["product.id"], "productName" => $row["product.pName"], "productDescription" => $row["product.pDescription"], "productCategory" => $row["product.category"], "productPrice" => $row["product.pPrice"], "linkToPic" => $row["product.pPicture"]);
-				        array_push($arrOfProducts, $currentRow);
-				    }
-				    return array('status' => "success", "code" => 200, 'response' => $arrOfProducts);
-			} 
-			else
-			{
-				$conn -> close();
-				return array('status' => 'Invalid user password combination', 'code' => 409);
-			}
-		}
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
-		}
-	}
 
-	/**
-	 * Function to create the first register of a friendship
-	 * before it is confirmed by the seconduser. Here we 
-	 * insert the friendship with a P for Pending.
-	 * @param Integer $uId
-	 * 	Used to keep the Id of the user sending the request.
-	 * @param String $newFriendUserName
-	 *  Used to keep the name of the new friend, which was
-	 *	 obtained from the front-end, once the username is
-	 *   taken the id is obtained via a query.
-	 * @return Array
-	 * 	Returns an array with the status and code.
-	 */
-	function addFriend($uId, $newFriendUserName)
-	{
-		$conn = connect();
-		if ($conn) 
-		{
-			$query = "SELECT userId FROM useraccounts WHERE username = ?;"
-			$stmt = $conn->prepare($query);
-			$stmt -> bindparam('s',$newFriendUserName);
-			if ($stmt -> execute()) 
-			{
-				$stmt -> store_result();
-				$stmt ->bind_result($NewFriendUserId);
-				$stmt -> fetch();
-				$secondQuery = "INSERT INTO friendrelations (user1, user2, areFriends) VALUES ($uId, $NewFriendUserId, 'P')";
-				$prepared_stmt -> prepare($secondQuery);
-				if ($prepared_stmt->execute())
-				{
-					$stmt -> close();
-					$prepared_stmt -> close();
-					$conn -> close();
-					return array('status' => 'success', 'code' => 200);
-				}
-				$stmt -> close();
-				$conn -> close();
-				return array('status' => 'Something went wrong while trying to add your friend.', 'code' => 409);
-			} 
-			else
-			{
-				$conn -> close();
-				return array('status' => 'Something went wrong while trying to add your friend.', 'code' => 409);
-			}
-		}
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
-		}
-	}
-	/**
-	 * Function to create the first register of a friendship
-	 * before it is confirmed by the seconduser. Here we 
-	 * insert the friendship with a P for Pending.
-	 * @param Integer $uId
-	 * 	Used to keep the Id of the user sending the request.
-	 * @param String $newFriendUserName
-	 *  Used to keep the name of the new friend, which was
-	 *	 obtained from the front-end, once the username is
-	 *   taken the id is obtained via a query.
-	 * @return Array
-	 * 	Returns an array with the status and code.
-	 */
-	function confirmFriend($uId, $newFriendUserName)
-	{
-		$conn = connect();
-		if ($conn) 
-		{
-			$query = "SELECT userId FROM useraccounts WHERE username = ?;"
-			$stmt = $conn->prepare($query);
-			$stmt -> bindparam('s',$newFriendUserName);
-			if ($stmt -> execute()) 
-			{
-				$stmt -> store_result();
-				$stmt ->bind_result($NewFriendUserId);
-				$stmt -> fetch();
-				$secondQuery = "UPDATE friendrelations SET areFriends = 'Y' WHERE ((user1 = $NewFriendUserId AND user2 = $uId) OR (user2 = $NewFriendUserId AND user1 = $uId)) AND reFriends = 'P';";
-				$prepared_stmt -> prepare($secondQuery);
-				if ($prepared_stmt->execute())
-				{
-					$stmt -> close();
-					$prepared_stmt -> close();
-					$conn -> close();
-					return array('status' => 'success', 'code' => 200);
-				}
-				$stmt -> close();
-				$conn -> close();
-				return array('status' => 'Something went wrong while trying to add your friend.', 'code' => 409);
-			} 
-			else
-			{
-				$conn -> close();
-				return array('status' => 'Something went wrong while trying to add your friend.', 'code' => 409);
-			}
-		}
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
-		}
-	}
-	function displayFriends($uId)
-	{
-		$conn = connect();
-		if ($conn) 
-		{
-			$query = "SELECT username, userProfilePic, userCountry, userId, FROM useraccounts WHERE userId IN (SELECT user1 FROM friendrelations WHERE (user1 = ? OR user2 = ?) AND areFriends = 'Y') OR userId IN (SELECT user2 FROM friendrelations WHERE (user1 = ? OR user2 = ?) AND areFriends = 'Y');";
-				$stmt = $conn->prepare($query);
-				$stmt->bind_param("iiii", $uId, $uId, $uId, $uId);
-				if ($stmt->execute())
-				{
-				    $result = $stmt->get_result();
-				    $arrOfFriends = array();
-				    while($row = mysqli_fetch_assoc($result)) 
-				    {
-				    	if($row['userId'] !== $uId)
-				    	{
-					        $currentRow = array("userName" => $row["username"], "userProfilePic" => $row["userProfilePic"]);
-					        array_push($arrOfFriends, $currentRow);
-				    	}
-				    }
-				    return array('status' => "success", "code" => 200, 'response' => $arrOfFriends);
-				} 
-				else {
-				    return array('status' => "Bad connection, retrieval error", "code" => 500);
-				}	
-		}
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
-		}
-	}
-	function displayNewPossibleFriends($uId)
-	{
-		$conn = connect();
-		if ($conn) 
-		{
-			$query = "SELECT username, userProfilePic, userCountry, userId, FROM useraccounts WHERE userId NOT EXISTS (SELECT user1 FROM friendrelations WHERE (user1 = ? OR user2 = ?) AND (areFriends = 'P' OR areFriends = 'Y') AND userId NOT EXIST (SELECT user2 FROM friendrelations WHERE (user1 = ? OR user2 = ?) AND (areFriends = 'P' OR areFriends = 'Y'));";
-				$stmt = $conn->prepare($query);
-				$stmt->bind_param("iiii", $uId, $uId, $uId, $uId);
-				if ($stmt->execute())
-				{
-				    $result = $stmt->get_result();
-				    $arrOfNewPossibleFriends = array();
-				    while($row = mysqli_fetch_assoc($result)) 
-				    {
-				    	if($row['userId'] !== $uId)
-				    	{
-					        $currentRow = array("userName" => $row["username"], "userProfilePic" => $row["userProfilePic"]);
-					        array_push($arrOfNewPossibleFriends, $currentRow);
-				    	}
-				    }
-				    return array('status' => "success", "code" => 200, 'response' => $arrOfNewPossibleFriends);
-				} 
-				else {
-				    return array('status' => "Bad connection, retrieval error", "code" => 500);
-				}	
-		}
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
-		}
-	}
-	function incomingFriendRequestDisplayer($uId)
-	{
-		$conn = connect();
-		if ($conn) 
-		{
-			$query = "SELECT userId FROM friendrelations WHERE user2 = ? AND areFriends = 'P';"
-			$stmt = $conn->prepare($query);
-			$stmt -> bindparam('i',$uId);
-			if ($stmt->execute())
-			{
-				$result = $stmt->get_result();
-			    $arrOfRequests = array();
-			    while($row = mysqli_fetch_assoc($result)) 
-			    {
-			    	if($row['userId'] !== $uId)
-			    	{
-				        $currentRow = array("userName" => $row["username"], "userProfilePic" => $row["userProfilePic"]);
-				        array_push($arrOfRequests, $currentRow);
+			if ($prepared_stmt -> execute()) {
+				$result = $prepared_stmt->get_result();
+				# We declare here the array, since it will contain all the proeycts.
+			    $arrOfProyects = array();
+			    # Loop to get iterate through the result
+			    while($row = mysqli_fetch_assoc($result)) {
+			    	# We declare here the array of links since we want it to reset to empry on each iteration.
+			    	$arrOfPicsOfProyect = array();
+			    	# We get all the links to a particular proyect.
+			    	$arrOfPicsOfProyect = getImagesOfCurrentProyect($row["proyect.id"]);
+			    	# If the array didn't return a good value we return an error.
+			    	if ($arrOfPicsOfProyect[0] !== 200) {
+			    		return array('status' => 'Internal server error', 'code' => 500);
 			    	}
+			    	# Here we place all the values of the query and the array generated via the function.
+			        $currentRow = array("proyectId" => $row["proyect.id"], "proyectName" => $row["proyect.name"], "proyectDescription" => $row["proyect.description"], "proyectCategory" => $category, "pics" => $arrOfPicsOfProyects[1]);
+			        # We push the row to the array of proyects.
+			        array_push($arrOfProyects, $currentRow);
 			    }
-			    return array('status' => "success", "code" => 200, 'response' => $arrOfRequests);
+			    # We close the connection and return it as a response.
+			    $conn -> close();
+			    return array('status' => "success", "code" => 200, 'response' => $arrOfProyects);
+			} # In case the stmt was not executed.
+			else{
+				$conn -> close();
+				return array('status' => 'Error no proyects in category', 'code' => 409);
+			}
+		}# Else in case the connection was not established.
+		else{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
+	function getProyectsByCategoryBeforeAfter($category){
+		$conn = connect();
+		if ($conn) {
+			$query = "SELECT proyect.id, proyect.name, proyect.description
+					  FROM proyect
+					  WHERE proyect.category = ? AND proyect.isBeforeAfter = 1";
+
+			$prepared_stmt = $conn -> prepare($query);
+			$prepared_stmt = $conn -> bindparam( 's', $category);
+
+			if ($prepared_stmt -> execute()) {
+				$result = $prepared_stmt->get_result();
+				# We declare here the array, since it will contain all the proeycts.
+			    $arrOfProyects = array();
+			    # Loop to get iterate through the result
+			    while($row = mysqli_fetch_assoc($result)) {
+			    	# We declare here the array of links since we want it to reset to empry on each iteration.
+			    	$arrOfPicsOfProyect = array();
+			    	# We get all the links to a particular proyect.
+			    	$arrOfPicsOfProyect = getImagesOfCurrentProyect($row["proyect.id"]);
+			    	# If the array didn't return a good value we return an error.
+			    	if ($arrOfPicsOfProyect[0] !== 200) {
+			    		return array('status' => 'Internal server error', 'code' => 500);
+			    	}
+			    	# Here we place all the values of the query and the array generated via the function.
+			        $currentRow = array("proyectId" => $row["proyect.id"], "proyectName" => $row["proyect.name"], "proyectDescription" => $row["proyect.description"], "proyectCategory" => $category, "pics" => $arrOfPicsOfProyects[1]);
+			        # We push the row to the array of proyects.
+			        array_push($arrOfProyects, $currentRow);
+			    }
+			    # We close the connection and return it as a response.
+			    $conn -> close();
+			    return array('status' => "success", "code" => 200, 'response' => $arrOfProyects);
+			} # In case the stmt was not executed.
+			else{
+				$conn -> close();
+				return array('status' => 'Error no proyects in category', 'code' => 409);
+			}
+		}# Else in case the connection was not established.
+		else{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
+	function getImagesOfCurrentProyect($id){
+		$NewCon = connect();
+		if ($NewCon){
+			$queryForPics = "SELECT pp.id, pp.type, pp.linkToPic
+					  		 FROM picsofproyects as pp
+							 WHERE pp.idproyect = ?";
+
+			$picStmt = $NewCon -> prepare($queryForPics);
+			$picStmt = $NewCon -> bindparam( 'i', $id);
+			
+			if ($picStmt -> execute()){
+				$picsResult = $picStmt->get_result();
+			    $arrOfLinks = array();
+
+			    while($PicRow = mysqli_fetch_assoc($picsResult)){
+			        $picsCurrentRow = array('picId' => $PicRow["pp.id"], 'picType' => $PicRow["pp.type"], 'picLink' => $PicRow["pp.linkToPic"]);
+			        array_push($arrOfLinks, $picsCurrentRow);
+			    }
+			    return array(200, $arrOfLinks);
+			}else{
+				$NewCon -> close();
+				return array('error');
+			}
+		}else{
+			return array('error');
+		}
+	}
+
+
+	function getProductsByCategory($category){
+		$conn = connect();
+		if ($conn){
+			$query = "SELECT product.id, product.pName, product.pDescription, product.pPrice, product.pPicture
+					  FROM product 
+					  WHERE product.category = ?;";
+
+			$prepared_stmt = $conn -> prepare($query);
+			$prepared_stmt = $conn -> bindparam( 's', $category);
+			if ($prepared_stmt -> execute()){
+				$result = $prepared_stmt->get_result();
+			    $arrOfProducts = array();
+			    while($row = mysqli_fetch_assoc($result)){
+			        $currentRow = array("productId" => $row["product.id"], "productName" => $row["product.pName"], "productDescription" => $row["product.pDescription"], "productCategory" => $category, "productPrice" => $row["product.pPrice"], "linkToPic" => $row["product.pPicture"]);
+			        array_push($arrOfProducts, $currentRow);
+			    }
+			    $conn -> close();
+			    return array('status' => "success", "code" => 200, 'response' => $arrOfProducts);
+			}else{
+				$conn -> close();
+				return array('status' => 'Invalid user password combination', 'code' => 409);
+			}
+		}else{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
+	function addProyect($name, $description, $category)
+	{
+		$conn = connect();
+		if ($conn) 
+		{
+			$query = "INSERT INTO proyect ( name,  description, category ) 
+            		  VALUES  ( ?, ?, ? )";
+			$prepared_stmt = $conn -> prepare ( $query );
+			$prepared_stmt -> bind_param ( 'sss' , $name, $description, $category );
+			  
+			if  ( $prepared_stmt -> execute() ) 
+			{
+				$getId = "SELECT MAX(id) as curId
+						  FROM proyect;";
+				$prepared_stmt_id = $conn -> prepare($getId);
+
+				if ($prepared_stmt_id -> execute()) {
+					$val = $prepared_stmt_id->get_result();
+					$val = mysqli_fetch_assoc($val);
+					$val = $val['curId'];
+
+					$conn -> close();
+					return array('status' => "success", "code" => 200, 'idOfProyect' => $val);
+				} else {
+					$conn -> close();
+					return array('status' => 'Invalid user password combination', 'code' => 409)
+				}
+			} else {
+				return array('status' => "Internal server error", "code" => 500);
+			}
+		}
+	}
+
+	function addProyectBeforeAfter($name, $description, $category)
+	{
+		$conn = connect();
+		if ($conn) 
+		{
+			$query = "INSERT INTO proyect ( name,  description, category, isBeforeAfter ) 
+            		  VALUES  ( ?, ?, ?, 1 )";
+			$prepared_stmt = $conn -> prepare ( $query );
+			$prepared_stmt -> bind_param ( 'sss' , $name, $description, $category);
+			  
+			if  ( $prepared_stmt -> execute() ) 
+			{
+				$getId = "SELECT MAX(id) as curId
+						  FROM proyect;";
+				$prepared_stmt_id = $conn -> prepare($getId);
+
+				if ($prepared_stmt_id -> execute()) {
+					$val = $prepared_stmt_id->get_result();
+					$val = mysqli_fetch_assoc($val);
+					$val = $val['curId'];
+
+					$conn -> close();
+					return array('status' => "success", "code" => 200, 'idOfProyect' => $val);
+				} else {
+					$conn -> close();
+					return array('status' => 'Invalid user password combination', 'code' => 409)
+				}
+			} else {
+				return array('status' => "Internal server error", "code" => 500);
+			}
+		}
+	}
+
+	function addPictureSingle($id){
+		$conn = connect();
+		if ($conn) 
+		{
+			$result = insertPic();
+			if ($result[0] !== 200) {
+				return array('status' => $result[1], 'code' => $result[0]);
+			} else {
+				$query = "INSERT INTO picsofproyects ( idproyect,  type, linkToPic ) 
+	            		  VALUES  ( ?, 'Alone', ?)";
+				$prepared_stmt = $conn -> prepare ( $query );
+				$prepared_stmt -> bind_param ( 'is' , $id, $result[1]);
+				  
+				if  ( $prepared_stmt -> execute() ) 
+				{
+					$conn -> close();
+					return array('status' => "success", "code" => 200);
+				} else {
+					return array('status' => "Internal server error", "code" => 500);
+				}
+			}
+		}
+	}
+
+	function addPictureBeforeAfter($id, $type){
+		$conn = connect();
+		if ($conn) 
+		{
+			$result = insertPic();
+			if ($result[0] !== 200) {
+				return array('status' => $result[1], 'code' => $result[0]);
+			} else {
+				$query = "INSERT INTO picsofproyects ( idproyect,  type, linkToPic ) 
+	            		  VALUES  ( ?, ?, ?)";
+				$prepared_stmt = $conn -> prepare ( $query );
+				$prepared_stmt -> bind_param ( 'is' , $id, $type, $result[1]);
+				  
+				if  ( $prepared_stmt -> execute() ) 
+				{
+					$conn -> close();
+					return array('status' => "success", "code" => 200);
+				} else {
+					return array('status' => "Internal server error", "code" => 500);
+				}
+			}
+		}else {
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
+	function addProduct($id, $name, $description, $price, $category){
+		$conn = connect();
+		if ($conn) 
+		{
+			$result = insertPic();
+			if ($result[0] !== 200) {
+				return array('status' => $result[1], 'code' => $result[0]);
+			} else {
+				$query = "INSERT INTO product ( id,  pNmae, pDescription, pPrice, pPicture, category ) 
+	            		  VALUES  ( ?,?,?,?,?,?)";
+				$prepared_stmt = $conn -> prepare ( $query );
+				$prepared_stmt -> bind_param ( 'isssss' , $id, $name, $description, $price, $result[1], $category);
+				
+				if  ( $prepared_stmt -> execute() ) 
+				{
+					$conn -> close();
+					return array('status' => "success", "code" => 200);
+				} else {
+					return array('status' => "Internal server error", "code" => 500);
+				}
+			}
+		}
+		else {
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
+	function insertPic(){
+		$target_dir = "images/";
+		$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+		$uploadOk = 1;
+		$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+		// Check if image file is a actual image or fake image
+		if(isset($_POST["submit"]))
+		{
+			$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+			if($check !== false)
+			{
+				//echo "File is an image - " . $check["mime"] . ".";
+				$uploadOk = 1;
 			}
 			else
 			{
-			$stmt -> close();
-			$conn -> close();
-			return array('status' => 'Something went wrong while trying to add your friend.', 'code' => 409);
+				return(400, "File is not an image.");
+				$uploadOk = 0;
 			}
 		}
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
+		// Check if file already exists
+		if (file_exists($target_file)) {
+		    $uploadOk = 0;
+		    return array(400, "Sorry, file already exists.");
 		}
-	}
-	/**
-	 * Check if a user with given username exists.
-	 *
-	 * @param String $userName
-	 *  The username of the new user..
-	 *
-	 * @return Boolean
-	 *  True -> User exists.
-	 *  False -> User does not exists.
-	 */
-	function userName_exits($userName)
-	{
-		$conn = connect();
-	    $prepared_stmtForUserNameValidation = $conn -> prepare('SELECT * FROM useraccounts WHERE username = ?');
-	    $prepared_stmtForUserNameValidation -> bind_param('s' , $userName);
-	    $prepared_stmtForUserNameValidation -> execute();
-	    if ($prepared_stmtForUserNameValidation -> num_rows() === 0) 
-	    {
-	        $prepared_stmtForUserNameValidation -> close();
-	        return false;
-	    }
-	    else
-	    {
-	        $prepared_stmtForUserNameValidation -> close();
-	        return true;
-	    }
-	}
-	/**
-	 * Check if a user with given e-mail exists.
-	 *
-	 * @param String $email
-	 *  The e-mail to id the user.
-	 *
-	 * @return Boolean
-	 *  True -> User exists.
-	 *  False -> User does not exists.
-	 */
-	function userEmail_exits($email)
-	{
-		$conn = connect();
-	    $prepared_stmtForEmailValidation = $conn->prepare('SELECT * FROM useraccounts WHERE userEmail = ?');
-	    $prepared_stmtForEmailValidation -> bind_param("s", $email);
-	    $prepared_stmtForEmailValidation -> execute();
-	    # $prepared_stmtForEmailValidation -> store_result();
-	    
-	    if ($prepared_stmtForEmailValidation -> num_rows() === 0) {
-	        $prepared_stmtForEmailValidation -> close();
-	        return false;
-	    } else {
-	        $prepared_stmtForEmailValidation -> close();
-	        return true;
-	    }
-	}
-	/**
-	 * Function to obtain the user's data to 
-	 * either display it or use it.
-	 * @return Array, status, code, response
-	 *  Status 				-> Code -> Response 
-	 *  Ok, aka success		 -> 200 -> response
-	 *  User not found.		 -> 406
-	 *  Invalid combination. -> 409
-	 *  Bad connection. 	 -> 500 
-	 */
-	function getUserData($temp)
-	{
-		$conn = connect();
-		if ($conn) 
-		{
-			$query = "SELECT * FROM useraccounts WHERE userId = ?;";
-		    $stmt = $conn->prepare($query);
-		    $stmt->bind_param("i", $temp);
-	        if (!$stmt->execute()) 
-		    {
-		    	$conn -> close();
-				return array('status' => "Bad connection, something went wrong while saving your data, please try again later.", "code" => 500);
+		// Check file size
+		if ($_FILES["fileToUpload"]["size"] > 500000) {
+		    $uploadOk = 0;
+		    return array(400, "Sorry, your file is too large.");
+		}
+		// Allow certain file formats
+		if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+		&& $imageFileType != "gif" ) {
+		    $uploadOk = 0;
+		    return array(400, "Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
+		}
+		// Check if $uploadOk is set to 0 by an error
+		if ($uploadOk == 0) {
+		    return array(400, "Sorry, your file was not uploaded.");
+		// if everything is ok, try to upload file
+		} else {
+		    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+		    	//return array(200, basename( $_FILES["fileToUpload"]["name"]))
+		    	return array(200, $target_file . $imageFileType)
+		    } else {
+		        return array(406, "Sorry, there was an error uploading your file.");
 		    }
-		    else
-		    {       
-		        $result = $stmt->get_result();
-		        $arrOfData = array();
-		        $row = mysqli_fetch_assoc($result);
-		        $arrOfData = array("userCountry" => $row["userCountry"], "userEmail" => $row["userEmail"], "userFiName" => $row["userFiName"], "userLaName" => $row["userLaName"], "userGender" => $row["userGender"], "username" => $row["username"], "userProfilePic" => $row["userProfilePic"]);
-		        /* free results */
-		        /* close statement */
-		        $stmt->free_result();
-		        $stmt->close();
-		        
-		        return array('status' => 'success', 'code' => 200, 'response' => $arrOfData);
-		    }
-		} 
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
 		}
 	}
-	/**
-	 * Function to obtain all posts that a certain 
-	 * user is allowed to see. This includes, posts
-	 * made by him or a confirmed friend.
-	 * @param Integer $temp
-	 *  Used to keep the current user's ID.
-	 * @return array
-	 * 	The array contains all the posts that match the 
-	 * criteria.
-	 */
-	function getPosts($temp)
-	{
+
+	function addToCart($idc, $idp){
 		$conn = connect();
 		if ($conn) 
 		{
-			$query = "SELECT pt1.postPosterId, pt1.postText, pt1.postImage, useraccounts.userId, useraccounts.username, useraccounts.userProfilePic FROM (SELECT userposts.postPosterId, userposts.postText, userposts.postImage FROM userposts WHERE userposts.postPosterId = ? OR userposts.postPosterId = (SELECT user1 FROM friendrelations WHERE (user1 = ? OR user2 = ?) AND areFriends = 'Y') OR userposts.postPosterId = (SELECT user2 FROM friendrelations WHERE (user1 = ? OR user2 = ?) AND areFriends = 'Y')) as pt1 INNER JOIN useraccounts ON pt1.postPosterId=useraccounts.userId";
-				$stmt = $conn->prepare($query);
-				$stmt->bind_param("iiiii", $temp, $temp, $temp, $temp, $temp);
-				if ($stmt->execute())
-				{
-				    $result = $stmt->get_result();
-				    $arrOfPosts = array();
-				    while($row = mysqli_fetch_assoc($result)) 
-				    {
-				        $currentRow = array("posterId" => $row["postPosterId"], "postText" => $row["postText"], "postImage" => $row["postImage"], "posterProfilePic" => $row["userProfilePic"], "posterUserName" => $row["username"]);
-				        array_push($arrOfPosts, $currentRow);
-				    }
-				    return array('status' => "success", "code" => 200, 'response' => $arrOfPosts);
-				} 
-				else {
-				    return array('status' => "Bad connection, retrieval error", "code" => 500);
-				}	
-		}
-		else
-		{
-			return array('status' => "Internal server error", "code" => 500);
-		}
-	}
-	/**
-	 * Funtion used when the user is creating a new post.
-	 * It adds the post to the database with all it's
-	 * related info.
-	 * @param Integer $uId
-	 *  Used to keep the current user's ID.
-	 * @param String $postText
-	 *  Used to store the input the user has given.
-	 * @param Image $postImage
-	 *  The image will be send to the file system, once in 
-	 *	 the file system the location will be placed in the 
-	 *	 database to keep from using data blob in the database.
-	 * @return Array
-	 *  It returns an array containing the end status of the
-	 * 	query.
-	 */
-	function newPost($uId, $postText, $postImage)
-	{
-		$conn = connect();
-		if ($conn) 
-		{
-			$query = "INSERT INTO userposts  ( postPosterId, postText, postImage ) 
-            VALUES  ( ?,?,? )";
+			$query = "INSERT INTO shoppingcart ( idclient, idproduct ) 
+            		  VALUES  ( ?,?)";
 			$prepared_stmt = $conn -> prepare ( $query );
-			$prepared_stmt -> bind_param ( 'iss' , $_SESSION['userId'], $postText, $postImage);
-			  
-			if  ( $prepared_stmt -> execute() ) {
+			$prepared_stmt -> bind_param ( 'ii' , $idc, $idp);
+			
+			if  ( $prepared_stmt -> execute() ) 
+			{
 				$conn -> close();
-			    return array ( "status" => "success", 'code' => 200 );
+				return array('status' => "success", "code" => 200);
 			} else {
-				$conn -> close();
-			    $prepared_stmt -> close();
-			    return array('status' => "Conflict, something went wrong, try again later.", "code" => 500);
+				return array('status' => "Internal server error", "code" => 500);
 			}
 		}
-		else
-		{
+		else {
 			return array('status' => "Internal server error", "code" => 500);
 		}
 	}
-	/**
-	 * Function to obtain all the user's friends.
-	 * The correct return gives an array with all the 
-	 * the info of confirmed friends.
-	 * @param Integer $temp
-	 *  Used to keep the current user's ID.
-	 * @return array
-	 * 	The array contains info of the user's confirmed
-	 * 	friends. 
-	 */
-	function getFriends($uId)
-	{
+
+	function removeFromCart($idc, $idp){
 		$conn = connect();
 		if ($conn) 
 		{
-			$query = "SELECT username, userProfilePic, userFiName, userLaName FROM useraccounts WHERE userId IN (user1, user2 FROM friendrelations WHERE user1 = ? OR user2 = ? AND areFriends = 'Y');";
-		    $stmt = $conn->prepare($query);
-		    $stmt->bind_param("ii", $temp, $temp);
-	       if ($stmt->execute())
-				{
-				    $result = $stmt->get_result();
-				    $arrOfFriends = array();
-				    while($row = mysqli_fetch_assoc($result)) 
-				    {
-				        $currentRow = array("username" => $row["username"], "profilePic" => $row["userProfilePic"], "firstName" => $row["userFiName"], "lastName" => $row["userLaName"]);
-				        array_push($arrOfFriends, $currentRow);
-				    }
-				    return array('status' => "success", "code" => 200, 'response' => $arrOfFriends);
-				} 
-				else {
-				    return array('status' => "Bad connection, retrieval error", "code" => 500);
-				}
-		} 
-		else
-		{
+			$query = "DELETE FROM shoppingcart
+            		  WHERE  ( ?,?)";
+			$prepared_stmt = $conn -> prepare ( $query );
+			$prepared_stmt -> bind_param ( 'ii' , $idc, $idp);
+			
+			if  ( $prepared_stmt -> execute() ) 
+			{
+				$conn -> close();
+				return array('status' => "success", "code" => 200);
+			} else {
+				return array('status' => "Internal server error", "code" => 500);
+			}
+		}
+		else {
 			return array('status' => "Internal server error", "code" => 500);
 		}
 	}
