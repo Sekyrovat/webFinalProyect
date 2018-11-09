@@ -50,7 +50,8 @@
 				$query = "INSERT INTO account (fName, lName, Email, pwd)
 				VALUES (?, ?, ?, ?)";
 				$prepared_stmt = $conn->prepare($query);
-				$prepared_stmt->bind_param("ssss", $userFiName, $userLaName, $userEmail, $userPwd);
+				$newPass = password_hash($userPwd, PASSWORD_DEFAULT)
+				$prepared_stmt->bind_param("ssss", $userFiName, $userLaName, $userEmail, $newPass);
 			    if ($prepared_stmt->execute()) 
 			    {
 			        $conn -> close();
@@ -96,19 +97,24 @@
 			} 
 			else 
 			{
-				$query = "SELECT id
+				$query = "SELECT id, pwd
 						  FROM account 
-						  WHERE Email = ? AND pwd = ?";
+						  WHERE Email = ?";
 				$prepared_stmt = $conn -> prepare($query);
-				$prepared_stmt -> bind_param( 'ss', $userEmail, $pwd );
+				$prepared_stmt -> bind_param( 's', $userEmail);
 				if ($prepared_stmt -> execute()) 
 				{
 					$prepared_stmt -> store_result();
-					$prepared_stmt ->bind_result($uId);
+					$prepared_stmt ->bind_result($uId, $dbPass);
 					$prepared_stmt -> fetch();
 					$prepared_stmt -> close();
 					$conn -> close();
-					return array('status' => 'success', 'code' => 200, 'response' => $uId);
+					if (password_verify($dbPass, $pwd)) {
+						return array('status' => 'success', 'code' => 200, 'response' => $uId);
+					} else {
+						return array('status' => 'Invalid user password combination', 'code' => 409);
+					}
+					
 				} 
 				else
 				{
@@ -290,7 +296,7 @@
 					return array('status' => "success", "code" => 200, 'idOfProyect' => $val);
 				} else {
 					$conn -> close();
-					return array('status' => 'Invalid user password combination', 'code' => 409)
+					return array('status' => 'Bad arguments', 'code' => 409)
 				}
 			} else {
 				return array('status' => "Internal server error", "code" => 500);
@@ -381,7 +387,7 @@
 		}
 	}
 
-	function addProduct($id, $name, $description, $price, $category){
+	function addProduct( $name, $description, $price, $category){
 		$conn = connect();
 		if ($conn) 
 		{
@@ -389,10 +395,10 @@
 			if ($result[0] !== 200) {
 				return array('status' => $result[1], 'code' => $result[0]);
 			} else {
-				$query = "INSERT INTO product ( id,  pNmae, pDescription, pPrice, pPicture, category ) 
-	            		  VALUES  ( ?,?,?,?,?,?)";
+				$query = "INSERT INTO product ( pName, pDescription, pPrice, pPicture, category ) 
+	            		  VALUES  ( ?,?,?,?,?)";
 				$prepared_stmt = $conn -> prepare ( $query );
-				$prepared_stmt -> bind_param ( 'isssss' , $id, $name, $description, $price, $result[1], $category);
+				$prepared_stmt -> bind_param ( 'sssss' , $name, $description, $price, $result[1], $category);
 				
 				if  ( $prepared_stmt -> execute() ) 
 				{
@@ -501,4 +507,61 @@
 			return array('status' => "Internal server error", "code" => 500);
 		}
 	}
+
+	function getCartItems($idc)
+	{
+		$conn = connect();
+		if ($conn){
+			$query = "SELECT product.id, product.pName, product.pDescription, product.pPrice, product.pPicture
+					  FROM product INNER JOIN shoppingcart ON product.productId = shoppingcart.idproduct
+					  WHERE shoppingcart.idclient = ?;";
+
+			$prepared_stmt = $conn -> prepare($query);
+			$prepared_stmt = $conn -> bindparam( 's', $idc);
+			if ($prepared_stmt -> execute()){
+				$result = $prepared_stmt->get_result();
+			    $arrOfProducts = array();
+			    while($row = mysqli_fetch_assoc($result)){
+			        $currentRow = array("productId" => $row["product.id"], "productName" => $row["product.pName"], "productDescription" => $row["product.pDescription"], "productPrice" => $row["product.pPrice"], "linkToPic" => $row["product.pPicture"]);
+			        array_push($arrOfProducts, $currentRow);
+			    }
+			    $conn -> close();
+			    return array('status' => "success", "code" => 200, 'response' => $arrOfProducts);
+			}else{
+				$conn -> close();
+				return array('status' => 'Invalid user password combination', 'code' => 409);
+			}
+		}else{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
+	function getTotalFromCart($idc)
+	{
+		$conn = connect();
+		if ($conn){
+			$query = "SELECT SUM(product.pPrice) as productTotal
+					  FROM product INNER JOIN shoppingcart ON product.productId = shoppingcart.idproduct
+					  WHERE shoppingcart.idclient = ?;";
+
+			$prepared_stmt = $conn -> prepare($query);
+			$prepared_stmt = $conn -> bindparam( 's', $idc);
+			if ($prepared_stmt -> execute()){
+				$result = $prepared_stmt->get_result();
+			    $arrOfProducts = array();
+			    while($row = mysqli_fetch_assoc($result)){
+			        $currentRow = array("total" => $row["productTotal"]);
+			        array_push($arrOfProducts, $currentRow);
+			    }
+			    $conn -> close();
+			    return array('status' => "success", "code" => 200, 'response' => $arrOfProducts);
+			}else{
+				$conn -> close();
+				return array('status' => 'Invalid user password combination', 'code' => 409);
+			}
+		}else{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
 ?>

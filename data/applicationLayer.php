@@ -33,189 +33,95 @@
 				# Here we call the login from the data layer.
 				requestLogin();
 				break;
-			case 'GET_POSTS':
-				requestPosts();
+			case 'GET_PROYECTS_CATEGORY':
+				requestProyectsByCategory();
 				break;
-			case 'GET_DATA':
-				requestData();
+			case 'GET_PROYECTS_CATEGORY_BEFORE_AFTER':
+				requestProyectsByCategoryBeforeAfter();
 				break;
-			case 'GET_FRIENDS':
-				requestFriends();
+			case 'GET_PRODUCTS_CATEGORY':
+				requestProductsByCategory();
 				break;
-		}
-	}
-	function putRequests($action)
-	{
-		switch ($action) {
-			case 'CONFIRM_FRIEND':
-				# Here we call the login from the data layer.
-				confirmFriendship();
+			case 'GET_CURRENT_CART':
+				requestCurrentCartItems();
+				break;
+			case 'GET_TOTAL':
+				requestTotalFromCart();
 				break;
 		}
 	}
+	'''
+		function putRequests($action)
+		{
+			switch ($action) {
+				case 'CONFIRM_FRIEND':
+					# Here we call the login from the data layer.
+					confirmFriendship();
+					break;
+			}
+		}
+	'''
 	function postRequests($action)
 	{
 		switch ($action) {
 			case 'REGISTER':
 				requestRegister();
 				break;
-			case 'NEW_POST':
-				makePost();
+			case 'ADD_PROYECT':
+				submitNewProyect();
 				break;
-			case 'ADD_FRIEND':
-				addNewFriend();
+			case 'ADD_PROYECT_BEFORE_AFTER':
+				submitNewProyectBeforeAfter();
+				break;
+			case 'ADD_SOLO_PICTURES':
+				addNewSoloPics();
+				break;
+			case 'ADD_BEFORE_AFTER_PICTURES':
+				addNewBeforeAfterPics();
+				break;
+			case 'ADD_PRODUCT':
+				addNewProduct();
+				break;
+			case 'ADD_PRODUCT_TO_CART':
+				requestAddToCart();
+				break;
+			case 'REMOVE_PRODUCT_FROM_CART':
+				requestRemoveFromCart();
 				break;
 			case 'LOGOUT':
 				attemptLogout();
 				break;
 		}
 	}
+
+	####################################################
+	####################################################
+	####################################################
+	# Functions for registering, logging in and out
 	function requestRegister()
 	{
-		$username = $_POST['username'];
 		$userFiName = $_POST['userFiName'];
 		$userLaName = $_POST['userLaName'];
 		$userEmail = $_POST['userEmail'];
 		$userPwd = $_POST['userPwd'];
-		$userGender = $_POST['userGender'];
-		$userCountry = $_POST['userCountry'];
-		$response = attemptRegistration($username, $userFiName, $userLaName, $userEmail, $userPwd, $userGender, $userCountry);
+		$response = attemptRegistration($userFiName, $userLaName, $userEmail, $userPwd);
 		if ($response['status'] === "success") {
 			echo json_encode($response['code']);
 		} else {
 			errorHandler($response["status"], $response["code"]);
 		}
 	}
-	function makePost()
-	{
-		session_start();
-		if(verifySession())
-		{
-			$uId = $_SESSION['userId'];
-			if  ($_POST['newInput'] === NULL || $_POST['newInput'] === "") {
-			    $postText = "";
-			} else {
-			    $postText = $_POST['newInput'];
-			}
-			if  ($_POST['newImage'] === NULL || $_POST['newImage'] === "") {
-			    $postImage = "";
-			} else {
-				$postImage = $_POST['newImage'];
-			}
-			
-			$response = newPost($uId, $postText, $postImage);
-			if ($response['status'] === "success") 
-			{
-				echo json_encode();
-			} 
-			else 
-			{
-				errorHandler($response["status"], $response["code"]);
-			}
-		}
-		else
-		{
-			errorHandler('User not logged in', 406);
-		}
-	}
-	function addNewFriend()
-	{
-		session_start();
-		if(verifySession())
-		{
-			$_PUT = file_get_contents('php://input');
-			$uId = $_SESSION['userId'];
-			$newFriend = $_PUT['newFriendUserName']
-			
-			$response = addFriend($uId, $newFriend);
-			if ($response['status'] === "success") 
-			{
-				echo json_encode();
-			} 
-			else 
-			{
-				errorHandler($response["status"], $response["code"]);
-			}
-		}
-		else
-		{
-			errorHandler('User not logged in', 406);
-		}
-	}
-	function requestData()
-	{
-		session_start();
-		if(verifySession())
-		{
-			$uId = $_SESSION['userId'];
-			
-			$response = getUserData($uId);
-			if ($response['status'] === "success") 
-			{
-				echo json_encode(array('status' => $response['status'], 'code' => $response['code'], 'response' => $response['response']));
-			} 
-			else
-			{
-				errorHandler($response["status"], $response["code"]);
-			}
-		}
-		else
-		{
-			errorHandler('User not logged in', 406);
-		}
-	}
-	
-	function requestPosts()
-	{
-		session_start();
-		if(verifySession())
-		{
-			$uId = $_SESSION['userId'];
-			$response = getPosts($uId);
-			if ($response['status'] === "success") {
-				echo json_encode(array('status' => 'success', 'code' => 200 , 'response' => $response['response']));
-			} else {
-				errorHandler($response["status"], $response["code"]);
-			}
-		}
-		else
-		{
-			errorHandler('User not logged in', 406);
-		}
-	}
 	function requestLogin()
 	{
-		$uName = $_GET['userName'];
+		$uEmail = $_GET['userEmail'];
 		$pwd = $_GET['userPassword'];
-		$response = attemptLogin($uName, $pwd);
+		$response = attemptLogin($uEmail, $pwd);
 		if ($response['status'] === "success") {
 			session_start();
 			$_SESSION['userId'] = $response['response'];
 			echo json_encode(array( 'status' => $response['status'], 'code' => $response['code'], 'user' => $_SESSION['userId']));
 		} else {
 			errorHandler(array($response["status"], $response["code"]));
-		}
-	}
-	function requestFriends()
-	{
-		session_start();
-		if(verifySession())
-		{
-			$uId = $_SESSION['userId'];
-			
-			$response = getFriends($uId);
-			if ($response['status'] === "success") 
-			{
-				echo json_encode(array('status' => 'success', 'code' => 200 , 'response' => $response['response']));
-			} 
-			else 
-			{
-				errorHandler($response["status"], $response["code"]);
-			}
-		}
-		else
-		{
-			errorHandler('User not logged in', 406);
 		}
 	}
 	/**
@@ -232,6 +138,361 @@
 			echo json_encode(array( 'status' => 'success', 'code' => 200));
 		}	
 	}
+	####################################################
+	####################################################
+	####################################################
+
+
+	####################################################
+	####################################################
+	####################################################
+	# Related to adding new proyects
+	function submitNewProyect()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$uId = $_SESSION['userId'];
+			if  ($uId = 0) {
+				$name = $_POST["proyName"];
+				$description = $_POST["proyDesc"];
+				$category = $_POST["proyCategory"];
+				$response = addProyect($name, $description, $category);
+			} else {
+			    errorHandler("Invalid activity", 409);
+			}
+			
+			if ($response['status'] === "success") 
+			{
+				echo json_encode(array('status' => 'success', 'code' => 200 , 'idOfProyect' => $response['idOfProyect']));
+			} 
+			else 
+			{
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+
+	function addNewSoloPics()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$uId = $_SESSION['userId'];
+			if  ($uId = 0) {
+				$proyId = $_POST["proyectId"];
+				$response = addPictureSingle($proyId);
+			} else {
+			    errorHandler("Invalid activity", 409);
+			}
+			
+			if ($response['status'] === "success") 
+			{
+				echo json_encode(array('status' => 'success', 'code' => 200));
+			} 
+			else 
+			{
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+	####################################################
+	####################################################
+	####################################################
+
+
+
+
+	####################################################
+	####################################################
+	####################################################
+	# Related to adding new before and after proyects
+	function submitNewProyectBeforeAfter()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$uId = $_SESSION['userId'];
+			if  ($uId = 0) {
+				$name = $_POST["proyName"];
+				$description = $_POST["proyDesc"];
+				$category = $_POST["proyCategory"];
+				$response = addProyectBeforeAfter($name, $description, $category);
+			} else {
+			    errorHandler("Invalid activity", 409);
+			}
+			
+			if ($response['status'] === "success") 
+			{
+				echo json_encode(array('status' => 'success', 'code' => 200 , 'idOfProyect' => $response['idOfProyect']));
+			} 
+			else 
+			{
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+	function addNewBeforeAfterPics()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$uId = $_SESSION['userId'];
+			if  ($uId = 0) {
+				$proyId = $_POST["proyectId"];
+				$type = $_POST["picType"];
+				$response = addPictureBeforeAfter($proyId, $type);
+			} else {
+			    errorHandler("Invalid activity", 409);
+			}
+			
+			if ($response['status'] === "success") 
+			{
+				echo json_encode(array('status' => 'success', 'code' => 200));
+			} 
+			else 
+			{
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+	####################################################
+	####################################################
+	####################################################
+
+
+
+	####################################################
+	####################################################
+	####################################################
+	# Related to requesting proyects and products to display
+	function requestProyectsByCategory()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$category = $_GET['category'];
+			$response = getProyectsByCategory($category);
+			if ($response['status'] === "success") {
+				echo json_encode(array('status' => 'success', 'code' => 200 , 'response' => $response['response']));
+			} else {
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+
+	function requestProyectsByCategoryBeforeAfter()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$category = $_GET['category'];
+			$response = getProyectsByCategoryBeforeAfter($category);
+			if ($response['status'] === "success") {
+				echo json_encode(array('status' => 'success', 'code' => 200 , 'response' => $response['response']));
+			} else {
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+
+	function requestProductsByCategory()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$category = $_GET['category'];
+			$response = getProductsByCategory($category);
+			if ($response['status'] === "success") {
+				echo json_encode(array('status' => 'success', 'code' => 200 , 'response' => $response['response']));
+			} else {
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+	####################################################
+	####################################################
+	####################################################
+
+
+
+	####################################################
+	####################################################
+	####################################################
+	# Related to adding new products
+
+	function addNewProduct()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$uId = $_SESSION['userId'];
+			if  ($uId = 0) {
+				$name = $_POST["prodName"];
+				$description = $_POST["prodDesc"];
+				$price = $_POST["prodPrice"];
+				$category = $_POST["prodCategory"];
+				$response = addProduct($name, $description, $price, $category);
+			} else {
+			    errorHandler("Invalid activity", 409);
+			}
+			
+			if ($response['status'] === "success") 
+			{
+				echo json_encode(array('status' => 'success', 'code' => 200));
+			} 
+			else 
+			{
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+
+
+	####################################################
+	####################################################
+	####################################################
+
+
+
+
+	####################################################
+	####################################################
+	####################################################
+	# Related to the shopping cart
+
+	function requestAddToCart()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$uId = $_POST["$uId"];
+			$product = $_POST["prodId"];
+			$response = addToCart($uId, $product);
+			
+			if ($response['status'] === "success") 
+			{
+				echo json_encode(array('status' => 'success', 'code' => 200));
+			} 
+			else 
+			{
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+
+
+	function requestRemoveFromCart()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$uId = $_POST["$uId"];
+			$product = $_POST["prodId"];
+			$response = removeFromCart($uId, $product);
+			
+			if ($response['status'] === "success") 
+			{
+				echo json_encode(array('status' => 'success', 'code' => 200));
+			} 
+			else 
+			{
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+
+	function requestCurrentCartItems()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$uId = $_POST["$uId"];
+			$response = getCartItems($uId);
+			
+			if ($response['status'] === "success") 
+			{
+				echo json_encode(array('status' => 'success', 'code' => 200, 'response' => $response["response"]));
+			} 
+			else 
+			{
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+
+	function requestTotalFromCart()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$uId = $_POST["$uId"];
+			$response = getTotalFromCart($uId);
+			
+			if ($response['status'] === "success") 
+			{
+				echo json_encode(array('status' => 'success', 'code' => 200, 'response' => $response["response"]));
+			} 
+			else 
+			{
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+
+	####################################################
+	####################################################
+	####################################################
+
+
 	function verifySession()
 	{
 		if(empty($_SESSION['userId']) || !isset($_SESSION['userId']) || $_SESSION['userId'] === 'undefined')
