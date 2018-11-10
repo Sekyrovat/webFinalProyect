@@ -50,7 +50,11 @@
 				$query = "INSERT INTO account (fName, lName, Email, pwd)
 				VALUES (?, ?, ?, ?)";
 				$prepared_stmt = $conn->prepare($query);
+<<<<<<< HEAD
 				$newPass = password_hash($userPwd, PASSWORD_DEFAULT);
+=======
+				$newPass = password_hash($userPwd, PASSWORD_DEFAULT)
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 				$prepared_stmt->bind_param("ssss", $userFiName, $userLaName, $userEmail, $newPass);
 			    if ($prepared_stmt->execute()) 
 			    {
@@ -88,7 +92,11 @@
 	function attemptLogin($userEmail, $pwd){
 		$conn = connect();
 		if ($conn){
+<<<<<<< HEAD
 			if (userEmail_exits($userEmail, $conn)){
+=======
+			if (userEmail_exits($userEmail)){
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 				$conn -> close();
 				return array('status' => "User not found", "code" => 406);
 			} 
@@ -99,12 +107,20 @@
 				$prepared_stmt = $conn -> prepare($query);
 				$prepared_stmt -> bind_param( 's', $userEmail);
 				if ($prepared_stmt -> execute()) {
+<<<<<<< HEAD
 					#$prepared_stmt -> store_result();
+=======
+					$prepared_stmt -> store_result();
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 					$prepared_stmt ->bind_result($uId, $dbPass);
 					$prepared_stmt -> fetch();
 					$prepared_stmt -> close();
 					$conn -> close();
+<<<<<<< HEAD
 					if (password_verify($pwd, $dbPass)) {
+=======
+					if (password_verify($dbPass, $pwd)) {
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 						return array('status' => 'success', 'code' => 200, 'response' => $uId);
 					} else {
 						return array('status' => 'Invalid user password combination', 'code' => 409);
@@ -129,7 +145,11 @@
 					  WHERE proyect.category = ? AND proyect.isBeforeAfter = 0";
 
 			$prepared_stmt = $conn -> prepare($query);
+<<<<<<< HEAD
 			$prepared_stmt = $conn -> bind_param( 's', $category);
+=======
+			$prepared_stmt = $conn -> bindparam( 's', $category);
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 
 			if ($prepared_stmt -> execute()) {
 				$result = $prepared_stmt->get_result();
@@ -172,7 +192,11 @@
 					  WHERE proyect.category = ? AND proyect.isBeforeAfter = 1";
 
 			$prepared_stmt = $conn -> prepare($query);
+<<<<<<< HEAD
 			$prepared_stmt = $conn -> bind_param( 's', $category);
+=======
+			$prepared_stmt = $conn -> bindparam( 's', $category);
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 
 			if ($prepared_stmt -> execute()) {
 				$result = $prepared_stmt->get_result();
@@ -215,7 +239,11 @@
 							 WHERE pp.idproyect = ?";
 
 			$picStmt = $NewCon -> prepare($queryForPics);
+<<<<<<< HEAD
 			$picStmt = $NewCon -> bind_param( 'i', $id);
+=======
+			$picStmt = $NewCon -> bindparam( 'i', $id);
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			
 			if ($picStmt -> execute()){
 				$picsResult = $picStmt->get_result();
@@ -239,13 +267,26 @@
 	function getProductsByCategory($category){
 		$conn = connect();
 		if ($conn){
+<<<<<<< HEAD
 			$prepared_stmt = $conn -> prepare("SELECT id, pName, pDescription, pPrice, pPicture FROM product WHERE category = '$category';");
 			#$prepared_stmt = $conn -> bind_param( 's', $category);
+=======
+			$query = "SELECT product.id, product.pName, product.pDescription, product.pPrice, product.pPicture
+					  FROM product 
+					  WHERE product.category = ?;";
+
+			$prepared_stmt = $conn -> prepare($query);
+			$prepared_stmt = $conn -> bindparam( 's', $category);
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			if ($prepared_stmt -> execute()){
 				$result = $prepared_stmt->get_result();
 			    $arrOfProducts = array();
 			    while($row = mysqli_fetch_assoc($result)){
+<<<<<<< HEAD
 			        $currentRow = array("productId" => $row["id"], "productName" => $row["pName"], "productDescription" => $row["pDescription"], "productCategory" => $category, "productPrice" => $row["pPrice"], 'linkToPic' => $row["pPicture"]);
+=======
+			        $currentRow = array("productId" => $row["product.id"], "productName" => $row["product.pName"], "productDescription" => $row["product.pDescription"], "productCategory" => $category, "productPrice" => $row["product.pPrice"], "linkToPic" => $row["product.pPicture"]);
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			        array_push($arrOfProducts, $currentRow);
 			    }
 			    $conn -> close();
@@ -284,7 +325,11 @@
 					return array('status' => "success", "code" => 200, 'idOfProyect' => $val);
 				} else {
 					$conn -> close();
+<<<<<<< HEAD
 					return array('status' => 'Bad arguments', 'code' => 409);
+=======
+					return array('status' => 'Bad arguments', 'code' => 409)
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 				}
 			} else {
 				return array('status' => "Internal server error", "code" => 500);
@@ -313,11 +358,19 @@
 					$val = mysqli_fetch_assoc($val);
 					$val = $val['curId'];
 
+<<<<<<< HEAD
 					$conn -> close();
 					return array('status' => "success", "code" => 200, 'idOfProyect' => $val);
 				} else {
 					$conn -> close();
 					return array('status' => 'Invalid user password combination', 'code' => 409);
+=======
+					$conn -> close();
+					return array('status' => "success", "code" => 200, 'idOfProyect' => $val);
+				} else {
+					$conn -> close();
+					return array('status' => 'Invalid user password combination', 'code' => 409)
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 				}
 			} else {
 				return array('status' => "Internal server error", "code" => 500);
@@ -379,6 +432,7 @@
 		$conn = connect();
 		if ($conn) 
 		{
+<<<<<<< HEAD
 			
 			$query = "INSERT INTO product ( pName, pDescription, pPrice, pPicture, category ) 
             		  VALUES  ( ?,?,?,?,?)";
@@ -393,12 +447,32 @@
 				return array('status' => "Internal server error", "code" => 500);
 			}
 		
+=======
+			$result = insertPic();
+			if ($result[0] !== 200) {
+				return array('status' => $result[1], 'code' => $result[0]);
+			} else {
+				$query = "INSERT INTO product ( pName, pDescription, pPrice, pPicture, category ) 
+	            		  VALUES  ( ?,?,?,?,?)";
+				$prepared_stmt = $conn -> prepare ( $query );
+				$prepared_stmt -> bind_param ( 'sssss' , $name, $description, $price, $result[1], $category);
+				
+				if  ( $prepared_stmt -> execute() ) 
+				{
+					$conn -> close();
+					return array('status' => "success", "code" => 200);
+				} else {
+					return array('status' => "Internal server error", "code" => 500);
+				}
+			}
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 		}
 		else {
 			return array('status' => "Internal server error", "code" => 500);
 		}
 	}
 
+<<<<<<< HEAD
 	function addPictureProduct($id){
 		$conn = connect();
 		if ($conn) 
@@ -431,6 +505,16 @@
 		// Check if image file is a actual image or fake image
 		if(isset($_POST["submit"]))
 		{
+=======
+	function insertPic(){
+		$target_dir = "images/";
+		$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+		$uploadOk = 1;
+		$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+		// Check if image file is a actual image or fake image
+		if(isset($_POST["submit"]))
+		{
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
 			if($check !== false)
 			{
@@ -439,14 +523,20 @@
 			}
 			else
 			{
+<<<<<<< HEAD
 				$uploadOk = 0;
 				return array(400, "File is not an image.");
+=======
+				return(400, "File is not an image.");
+				$uploadOk = 0;
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			}
 		}
 		// Check if file already exists
 		if (file_exists($target_file)) {
 		    $uploadOk = 0;
 		    return array(400, "Sorry, file already exists.");
+<<<<<<< HEAD
 		}
 		// Check file size
 		if ($_FILES["fileToUpload"]["size"] > 500000) {
@@ -498,6 +588,9 @@
 		    $uploadOk = 0;
 		    return array(400, "Sorry, file already exists.");
 		}
+=======
+		}
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 		// Check file size
 		if ($_FILES["fileToUpload"]["size"] > 500000) {
 		    $uploadOk = 0;
@@ -516,7 +609,11 @@
 		} else {
 		    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
 		    	//return array(200, basename( $_FILES["fileToUpload"]["name"]))
+<<<<<<< HEAD
 		    	return array(200, $target_file . $imageFileType);
+=======
+		    	return array(200, $target_file . $imageFileType)
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 		    } else {
 		        return array(406, "Sorry, there was an error uploading your file.");
 		    }
@@ -576,7 +673,11 @@
 					  WHERE shoppingcart.idclient = ?;";
 
 			$prepared_stmt = $conn -> prepare($query);
+<<<<<<< HEAD
 			$prepared_stmt = $conn -> bind_param( 's', $idc);
+=======
+			$prepared_stmt = $conn -> bindparam( 's', $idc);
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			if ($prepared_stmt -> execute()){
 				$result = $prepared_stmt->get_result();
 			    $arrOfProducts = array();
@@ -604,7 +705,11 @@
 					  WHERE shoppingcart.idclient = ?;";
 
 			$prepared_stmt = $conn -> prepare($query);
+<<<<<<< HEAD
 			$prepared_stmt = $conn -> bind_param( 's', $idc);
+=======
+			$prepared_stmt = $conn -> bindparam( 's', $idc);
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			if ($prepared_stmt -> execute()){
 				$result = $prepared_stmt->get_result();
 			    $arrOfProducts = array();
@@ -623,6 +728,7 @@
 		}
 	}
 
+<<<<<<< HEAD
 
 
 	function userEmail_exits($email, $conn)
@@ -642,4 +748,6 @@
 	        return false;
 	    }
 	}
+=======
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 ?>

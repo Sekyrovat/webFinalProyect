@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-11-2018 a las 06:43:57
+-- Tiempo de generación: 07-11-2018 a las 04:05:34
 -- Versión del servidor: 10.1.34-MariaDB
 -- Versión de PHP: 7.2.8
 
@@ -75,7 +75,8 @@ CREATE TABLE `proyect` (
   `id` int(11) NOT NULL COMMENT 'Id of the project',
   `name` tinytext COMMENT 'Name of the proyect',
   `description` text COMMENT 'Description of the proyect',
-  `category` tinytext NOT NULL
+  `category` tinytext NOT NULL,
+  `isBeforeAfter` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin2 COMMENT='Table to contain the info of the proyects';
 
 -- --------------------------------------------------------

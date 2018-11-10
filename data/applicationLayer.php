@@ -81,9 +81,12 @@
 			case 'ADD_PRODUCT':
 				addNewProduct();
 				break;
+<<<<<<< HEAD
 			case 'ADD_PICTURE_TO_PRODUCT':
 				addPictureToProduct();
 				break;
+=======
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			case 'ADD_PRODUCT_TO_CART':
 				requestAddToCart();
 				break;
@@ -121,9 +124,15 @@
 		if ($response['status'] === "success") {
 			session_start();
 			$_SESSION['userId'] = $response['response'];
+<<<<<<< HEAD
 			echo json_encode(array( 'status' => $response['status'], 'code' => $response['code'], 'response' => $response['response']));
 		} else {
 			errorHandler($response["status"], $response["code"]);
+=======
+			echo json_encode(array( 'status' => $response['status'], 'code' => $response['code']));
+		} else {
+			errorHandler(array($response["status"], $response["code"]));
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 		}
 	}
 	/**
@@ -155,7 +164,11 @@
 		if(verifySession() || $_SESSION['userId'] == 0)
 		{
 			$uId = $_SESSION['userId'];
+<<<<<<< HEAD
 			if  ($uId == 0) {
+=======
+			if  ($uId = 0) {
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 				$name = $_POST["proyName"];
 				$description = $_POST["proyDesc"];
 				$category = $_POST["proyCategory"];
@@ -177,10 +190,17 @@
 	function addNewSoloPics()
 	{
 		session_start();
+<<<<<<< HEAD
 		if(verifySession() || $_SESSION['userId'] == 0)
 		{
 			$uId = $_SESSION['userId'];
 			if  ($uId == 0) {
+=======
+		if(verifySession())
+		{
+			$uId = $_SESSION['userId'];
+			if  ($uId = 0) {
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 				$proyId = $_POST["proyectId"];
 				$response = addPictureSingle($proyId);
 			} else {
@@ -218,7 +238,11 @@
 		if(verifySession() || $_SESSION['userId'] == 0)
 		{
 			$uId = $_SESSION['userId'];
+<<<<<<< HEAD
 			if  ($uId == 0) {
+=======
+			if  ($uId = 0) {
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 				$name = $_POST["proyName"];
 				$description = $_POST["proyDesc"];
 				$category = $_POST["proyCategory"];
@@ -247,7 +271,11 @@
 		if(verifySession() || $_SESSION['userId'] == 0)
 		{
 			$uId = $_SESSION['userId'];
+<<<<<<< HEAD
 			if  ($uId == 0) {
+=======
+			if  ($uId = 0) {
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 				$proyId = $_POST["proyectId"];
 				$type = $_POST["picType"];
 				$response = addPictureBeforeAfter($proyId, $type);
@@ -301,7 +329,11 @@
 	function requestProyectsByCategoryBeforeAfter()
 	{
 		session_start();
+<<<<<<< HEAD
 		if(verifySession() || $_SESSION['userId'] == 0)
+=======
+		if(verifySession())
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 		{
 			$category = $_GET['category'];
 			$response = getProyectsByCategoryBeforeAfter($category);
@@ -320,11 +352,19 @@
 	function requestProductsByCategory()
 	{
 		session_start();
+<<<<<<< HEAD
 		if(verifySession() || $_SESSION['userId'] == 0)
 		{
 			$category = $_GET['category'];
 			$response = getProductsByCategory($category);
 			if ($response['status'] == "success") {
+=======
+		if(verifySession())
+		{
+			$category = $_GET['category'];
+			$response = getProductsByCategory($category);
+			if ($response['status'] === "success") {
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 				echo json_encode(array('status' => 'success', 'code' => 200 , 'response' => $response['response']));
 			} else {
 				errorHandler($response["status"], $response["code"]);
@@ -352,7 +392,11 @@
 		if(verifySession() || $_SESSION['userId'] == 0)
 		{
 			$uId = $_SESSION['userId'];
+<<<<<<< HEAD
 			if  ($uId == 0) {
+=======
+			if  ($uId = 0) {
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 				$name = $_POST["prodName"];
 				$description = $_POST["prodDesc"];
 				$price = $_POST["prodPrice"];
@@ -377,6 +421,7 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function addPictureToProduct()
 	{
 		session_start();
@@ -424,6 +469,27 @@
 		if(verifySession() || $_SESSION['userId'] == 0)
 		{
 			$uId = $_SESSION["userId"];
+=======
+
+	####################################################
+	####################################################
+	####################################################
+
+
+
+
+	####################################################
+	####################################################
+	####################################################
+	# Related to the shopping cart
+
+	function requestAddToCart()
+	{
+		session_start();
+		if(verifySession())
+		{
+			$uId = $_SESSION["$userId"];
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			$product = $_POST["prodId"];
 			$response = addToCart($uId, $product);
 			
@@ -446,9 +512,15 @@
 	function requestRemoveFromCart()
 	{
 		session_start();
+<<<<<<< HEAD
 		if(verifySession() || $_SESSION['userId'] == 0)
 		{
 			$uId = $_SESSION["userId"];
+=======
+		if(verifySession())
+		{
+			$uId = $_SESSION["$userId"];
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			$product = $_POST["prodId"];
 			$response = removeFromCart($uId, $product);
 			
@@ -470,9 +542,15 @@
 	function requestCurrentCartItems()
 	{
 		session_start();
+<<<<<<< HEAD
 		if(verifySession() || $_SESSION['userId'] == 0)
 		{
 			$uId = $_SESSION["userId"];
+=======
+		if(verifySession())
+		{
+			$uId = $_SESSION["$userId"];
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			$response = getCartItems($uId);
 			
 			if ($response['status'] === "success") 
@@ -493,9 +571,15 @@
 	function requestTotalFromCart()
 	{
 		session_start();
+<<<<<<< HEAD
 		if(verifySession() || $_SESSION['userId'] == 0)
 		{
 			$uId = $_SESSION["userId"];
+=======
+		if(verifySession())
+		{
+			$uId = $_SESSION["$userId"];
+>>>>>>> 3ce60883761997cf6fa017767857438e10d54fda
 			$response = getTotalFromCart($uId);
 			
 			if ($response['status'] === "success") 
