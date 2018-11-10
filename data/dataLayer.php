@@ -427,20 +427,18 @@
 		$uploadOk = 1;
 		$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 		// Check if image file is a actual image or fake image
-		if(isset($_POST["submit"]))
+		$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+		if($check !== false)
 		{
-			$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-			if($check !== false)
-			{
-				//echo "File is an image - " . $check["mime"] . ".";
-				$uploadOk = 1;
-			}
-			else
-			{
-				$uploadOk = 0;
-				return array(400, "File is not an image.");
-			}
+			//echo "File is an image - " . $check["mime"] . ".";
+			$uploadOk = 1;
 		}
+		else
+		{
+			$uploadOk = 0;
+			return array(400, "File is not an image.");
+		}
+		
 		// Check if file already exists
 		if (file_exists($target_file)) {
 		    $uploadOk = 0;
@@ -609,6 +607,33 @@
 			    $arrOfProducts = array();
 			    while($row = mysqli_fetch_assoc($result)){
 			        $currentRow = array("total" => $row["productTotal"]);
+			        array_push($arrOfProducts, $currentRow);
+			    }
+			    $conn -> close();
+			    return array('status' => "success", "code" => 200, 'response' => $arrOfProducts);
+			}else{
+				$conn -> close();
+				return array('status' => 'Invalid user password combination', 'code' => 409);
+			}
+		}else{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
+	function getListOfItems($name)
+	{
+		$conn = connect();
+		if ($conn){
+			$query = "SELECT id, pName, pDescription, pPrice, pPicture FROM product
+					  WHERE (`pName` LIKE '%".$name."%');";
+
+			$prepared_stmt = $conn -> prepare($query);
+			$prepared_stmt = $conn -> bind_param( 's', $name);
+			if ($prepared_stmt -> execute()){
+				$result = $prepared_stmt->get_result();
+			    $arrOfProducts = array();
+			    while($row = mysqli_fetch_assoc($result)){
+			         $currentRow = array("productId" => $row["id"], "productName" => $row["pName"], "productDescription" => $row["pDescription"], "productCategory" => $category, "productPrice" => $row["pPrice"], 'linkToPic' => $row["pPicture"]);
 			        array_push($arrOfProducts, $currentRow);
 			    }
 			    $conn -> close();

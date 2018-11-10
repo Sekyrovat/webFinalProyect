@@ -45,6 +45,10 @@
 			case 'GET_CURRENT_CART':
 				requestCurrentCartItems();
 				break;
+			case 'GET_SEARCH':
+				requestSearchOfItems();
+				break;
+				break;
 			case 'GET_TOTAL':
 				requestTotalFromCart();
 				break;
@@ -499,6 +503,29 @@
 		{
 			$uId = $_SESSION["userId"];
 			$response = getTotalFromCart($uId);
+			
+			if ($response['status'] === "success") 
+			{
+				echo json_encode(array('status' => 'success', 'code' => 200, 'response' => $response["response"]));
+			} 
+			else 
+			{
+				errorHandler($response["status"], $response["code"]);
+			}
+		}
+		else
+		{
+			errorHandler('User not logged in', 406);
+		}
+	}
+
+	function requestSearchOfItems()
+	{
+		session_start();
+		if(verifySession() || $_SESSION['userId'] == 0)
+		{
+			$name = $_SESSION["itemName"];
+			$response = getListOfItems($name);
 			
 			if ($response['status'] === "success") 
 			{
