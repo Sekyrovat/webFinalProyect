@@ -50,17 +50,16 @@
 				break;
 		}
 	}
-	'''
-		function putRequests($action)
-		{
-			switch ($action) {
-				case 'CONFIRM_FRIEND':
-					# Here we call the login from the data layer.
-					confirmFriendship();
-					break;
-			}
-		}
-	'''
+	#function putRequests($action)
+		#{
+		#	switch ($action) {
+		#		case 'CONFIRM_FRIEND':
+		#			# Here we call the login from the data layer.
+		#			confirmFriendship();
+		#			break;
+		#	}
+	#}
+
 	function postRequests($action)
 	{
 		switch ($action) {
@@ -114,12 +113,12 @@
 	function requestLogin()
 	{
 		$uEmail = $_GET['userEmail'];
-		$pwd = $_GET['userPassword'];
+		$pwd = $_GET['userPwd'];
 		$response = attemptLogin($uEmail, $pwd);
 		if ($response['status'] === "success") {
 			session_start();
 			$_SESSION['userId'] = $response['response'];
-			echo json_encode(array( 'status' => $response['status'], 'code' => $response['code'], 'user' => $_SESSION['userId']));
+			echo json_encode(array( 'status' => $response['status'], 'code' => $response['code']));
 		} else {
 			errorHandler(array($response["status"], $response["code"]));
 		}
@@ -162,17 +161,12 @@
 			    errorHandler("Invalid activity", 409);
 			}
 			
-			if ($response['status'] === "success") 
-			{
+			if ($response['status'] === "success"){
 				echo json_encode(array('status' => 'success', 'code' => 200 , 'idOfProyect' => $response['idOfProyect']));
-			} 
-			else 
-			{
+			} else {
 				errorHandler($response["status"], $response["code"]);
 			}
-		}
-		else
-		{
+		}else{
 			errorHandler('User not logged in', 406);
 		}
 	}
@@ -398,7 +392,7 @@
 		session_start();
 		if(verifySession())
 		{
-			$uId = $_POST["$uId"];
+			$uId = $_SESSION["$userId"];
 			$product = $_POST["prodId"];
 			$response = addToCart($uId, $product);
 			
@@ -423,7 +417,7 @@
 		session_start();
 		if(verifySession())
 		{
-			$uId = $_POST["$uId"];
+			$uId = $_SESSION["$userId"];
 			$product = $_POST["prodId"];
 			$response = removeFromCart($uId, $product);
 			
@@ -447,7 +441,7 @@
 		session_start();
 		if(verifySession())
 		{
-			$uId = $_POST["$uId"];
+			$uId = $_SESSION["$userId"];
 			$response = getCartItems($uId);
 			
 			if ($response['status'] === "success") 
@@ -470,7 +464,7 @@
 		session_start();
 		if(verifySession())
 		{
-			$uId = $_POST["$uId"];
+			$uId = $_SESSION["$userId"];
 			$response = getTotalFromCart($uId);
 			
 			if ($response['status'] === "success") 

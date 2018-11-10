@@ -85,25 +85,20 @@
 	 *  Invalid combination. -> 409
 	 *  Bad connection. 	 -> 500
 	 */
-	function attemptLogin($userEmail, $pwd)
-	{
+	function attemptLogin($userEmail, $pwd){
 		$conn = connect();
-		if ($conn) 
-		{
-			if (userEmail_exits($userEmail)) 
-			{
+		if ($conn){
+			if (userEmail_exits($userEmail)){
 				$conn -> close();
 				return array('status' => "User not found", "code" => 406);
 			} 
-			else 
-			{
+			else{
 				$query = "SELECT id, pwd
 						  FROM account 
 						  WHERE Email = ?";
 				$prepared_stmt = $conn -> prepare($query);
 				$prepared_stmt -> bind_param( 's', $userEmail);
-				if ($prepared_stmt -> execute()) 
-				{
+				if ($prepared_stmt -> execute()) {
 					$prepared_stmt -> store_result();
 					$prepared_stmt ->bind_result($uId, $dbPass);
 					$prepared_stmt -> fetch();
@@ -114,17 +109,14 @@
 					} else {
 						return array('status' => 'Invalid user password combination', 'code' => 409);
 					}
-					
 				} 
-				else
-				{
+				else{
 					$conn -> close();
 					return array('status' => 'Invalid user password combination', 'code' => 409);
 				}
 			}
 		}
-		else
-		{
+		else{
 			return array('status' => "Internal server error", "code" => 500);
 		}
 	}
@@ -154,7 +146,7 @@
 			    		return array('status' => 'Internal server error', 'code' => 500);
 			    	}
 			    	# Here we place all the values of the query and the array generated via the function.
-			        $currentRow = array("proyectId" => $row["proyect.id"], "proyectName" => $row["proyect.name"], "proyectDescription" => $row["proyect.description"], "proyectCategory" => $category, "pics" => $arrOfPicsOfProyects[1]);
+			        $currentRow = array("proyectId" => $row["proyect.id"], "proyectName" => $row["proyect.name"], "proyectDescription" => $row["proyect.description"], "proyectCategory" => $category, "pics" => $arrOfPicsOfProyects);
 			        # We push the row to the array of proyects.
 			        array_push($arrOfProyects, $currentRow);
 			    }
@@ -197,7 +189,7 @@
 			    		return array('status' => 'Internal server error', 'code' => 500);
 			    	}
 			    	# Here we place all the values of the query and the array generated via the function.
-			        $currentRow = array("proyectId" => $row["proyect.id"], "proyectName" => $row["proyect.name"], "proyectDescription" => $row["proyect.description"], "proyectCategory" => $category, "pics" => $arrOfPicsOfProyects[1]);
+			        $currentRow = array("proyectId" => $row["proyect.id"], "proyectName" => $row["proyect.name"], "proyectDescription" => $row["proyect.description"], "proyectCategory" => $category, "pics" => $arrOfPicsOfProyects);
 			        # We push the row to the array of proyects.
 			        array_push($arrOfProyects, $currentRow);
 			    }
