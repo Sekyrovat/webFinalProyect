@@ -421,7 +421,7 @@
 			}
 		}
 	}
-
+	
 	function insertPic(){
 		$target_dir = "./images/";
 		$target_file = $target_dir . basename($_FILES["files"]["name"]);
@@ -560,6 +560,33 @@
 			    $arrOfProducts = array();
 			    while($row = mysqli_fetch_assoc($result)){
 			        $currentRow = array("total" => $row["productTotal"]);
+			        array_push($arrOfProducts, $currentRow);
+			    }
+			    $conn -> close();
+			    return array('status' => "success", "code" => 200, 'response' => $arrOfProducts);
+			}else{
+				$conn -> close();
+				return array('status' => 'Invalid user password combination', 'code' => 409);
+			}
+		}else{
+			return array('status' => "Internal server error", "code" => 500);
+		}
+	}
+
+	function getListOfItems($name)
+	{
+		$conn = connect();
+		if ($conn){
+			$query = "SELECT id, pName, pDescription, pPrice, pPicture FROM product
+					  WHERE (`pName` LIKE '%".$name."%');";
+
+			$prepared_stmt = $conn -> prepare($query);
+			$prepared_stmt = $conn -> bind_param( 's', $name);
+			if ($prepared_stmt -> execute()){
+				$result = $prepared_stmt->get_result();
+			    $arrOfProducts = array();
+			    while($row = mysqli_fetch_assoc($result)){
+			         $currentRow = array("productId" => $row["id"], "productName" => $row["pName"], "productDescription" => $row["pDescription"], "productCategory" => $category, "productPrice" => $row["pPrice"], 'linkToPic' => $row["pPicture"]);
 			        array_push($arrOfProducts, $currentRow);
 			    }
 			    $conn -> close();
