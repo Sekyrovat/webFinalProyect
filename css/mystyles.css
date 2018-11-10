@@ -6928,3 +6928,6 @@ label.panel-block {
   .carousel.carousel-animate-fade .carousel-item:not(.is-active),
   .hero-carousel.carousel-animate-fade .carousel-item:not(.is-active) {
     opacity: 0; }
+
+.SecP:hover {
+  background-color: #ABABAB; }
