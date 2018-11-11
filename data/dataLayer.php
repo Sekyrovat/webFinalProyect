@@ -403,13 +403,15 @@
 		{
 			$upload_image = $_FILES["myimage"]["name"];
 			$target_dir = "./images/";
-		    if (!move_uploaded_file($_FILES["myimage"]["tmp_name"], $target_dir.$_FILES["myimage"]["name"])) {
-					return array('status' => "error", 'code' => 400);
-			} else {
-				$query = "INSERT INTO product ( linkToPic ) 
-	            		  VALUES  ( ? )";
+		 //    if (!move_uploaded_file($_FILES["myimage"]["tmp_name"], $target_dir.$_FILES["myimage"]["name"])) {
+			// 		return array('status' => "error", 'code' => 400);
+			// } else {
+				$query = "UPDATE product 
+						  SET product.pPicture = './images/works'
+	            		  WHERE product.id = 5";
 				$prepared_stmt = $conn -> prepare ( $query );
-				$prepared_stmt -> bind_param ( 's' , $target_dir.$target_file);
+				//$prepared_stmt -> bind_param ( ':pic', './images/works');
+				//$prepared_stmt -> bind_param ( ':proyect' , $id, PDO::PARAM_INT);
 				  
 				if  ( $prepared_stmt -> execute() ) 
 				{
@@ -418,10 +420,10 @@
 				} else {
 					return array('status' => "Internal server error", "code" => 500);
 				}
-			}
+			// }
 		}
 	}
-	
+
 	function insertPic(){
 		$target_dir = "./images/";
 		$target_file = $target_dir . basename($_FILES["files"]["name"]);

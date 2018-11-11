@@ -4,31 +4,31 @@ console.log(idProdtogetpic);
 const url = '../data/applicationLayer.php';
 const form = document.querySelector('form');
 
-form.addEventListener('submit', e => {
-    e.preventDefault();
+// form.addEventListener('submit', e => {
+//     e.preventDefault();
 
-    const files = document.querySelector('[type=file]').files;
-    const formData = new FormData();
+//     const files = document.querySelector('[type=file]').files;
+//     const formData = new FormData();
 
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
+//     for (let i = 0; i < files.length; i++) {
+//         let file = files[i];
 
-        formData.append('files', file);
-    }
+//         formData.append('files', file);
+//     }
 
-   let jsonToSend ={
-						"action": "ADD_PICTURE_TO_PRODUCT",
-						"productId": idProdtogetpic,
-						"formData": formData
-				  	};
+//    let jsonToSend ={
+// 						"action": "ADD_PICTURE_TO_PRODUCT",
+// 						"productId": idProdtogetpic,
+// 						"formData": formData
+// 				  	};
 
-    fetch(url, {
-        method: 'POST',
-        body: formData
-    }).then(response => {
-        console.log(response);
-    });
-});
+//     fetch(url, {
+//         method: 'POST',
+//         body: formData
+//     }).then(response => {
+//         console.log(response);
+//     });
+// });
 
 
 
