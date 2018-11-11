@@ -88,7 +88,7 @@
 	function attemptLogin($userEmail, $pwd){
 		$conn = connect();
 		if ($conn){
-			if (userEmail_exits($userEmail, $conn)){
+			if (!userEmail_exits($userEmail, $conn)){
 				$conn -> close();
 				return array('status' => "User not found", "code" => 406);
 			} 
@@ -401,14 +401,15 @@
 		$conn = connect();
 		if ($conn) 
 		{
-			$result = insertPicForProd();
-			if ($result[0] !== 200) {
-				return array('status' => $result[1], 'code' => $result[0]);
+			$upload_image = $_FILES["myimage"]["name"];
+			$target_dir = "./images/";
+		    if (!move_uploaded_file($_FILES["myimage"]["tmp_name"], $target_dir.$_FILES["myimage"]["name"])) {
+					return array('status' => "error", 'code' => 400);
 			} else {
 				$query = "INSERT INTO product ( linkToPic ) 
 	            		  VALUES  ( ? )";
 				$prepared_stmt = $conn -> prepare ( $query );
-				$prepared_stmt -> bind_param ( 's' , $result[1]);
+				$prepared_stmt -> bind_param ( 's' , $target_dir.$target_file);
 				  
 				if  ( $prepared_stmt -> execute() ) 
 				{
@@ -421,65 +422,15 @@
 		}
 	}
 
-	function insertPicForProd(){
-		$target_dir = "images/";
-		$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-		$uploadOk = 1;
-		$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-		// Check if image file is a actual image or fake image
-		if(isset($_POST["submit"]))
-		{
-			$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-			if($check !== false)
-			{
-				//echo "File is an image - " . $check["mime"] . ".";
-				$uploadOk = 1;
-			}
-			else
-			{
-				$uploadOk = 0;
-				return array(400, "File is not an image.");
-			}
-		}
-		// Check if file already exists
-		if (file_exists($target_file)) {
-		    $uploadOk = 0;
-		    return array(400, "Sorry, file already exists.");
-		}
-		// Check file size
-		if ($_FILES["fileToUpload"]["size"] > 500000) {
-		    $uploadOk = 0;
-		    return array(400, "Sorry, your file is too large.");
-		}
-		// Allow certain file formats
-		if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-		&& $imageFileType != "gif" ) {
-		    $uploadOk = 0;
-		    return array(400, "Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
-		}
-		// Check if $uploadOk is set to 0 by an error
-		if ($uploadOk == 0) {
-		    return array(400, "Sorry, your file was not uploaded.");
-		// if everything is ok, try to upload file
-		} else {
-		    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-		    	//return array(200, basename( $_FILES["fileToUpload"]["name"]))
-		    	return array(200, $target_file . $imageFileType);
-		    } else {
-		        return array(406, "Sorry, there was an error uploading your file.");
-		    }
-		}
-	}
-
 	function insertPic(){
-		$target_dir = "images/";
-		$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+		$target_dir = "./images/";
+		$target_file = $target_dir . basename($_FILES["files"]["name"]);
 		$uploadOk = 1;
 		$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 		// Check if image file is a actual image or fake image
 		if(isset($_POST["submit"]))
 		{
-			$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+			$check = getimagesize($_FILES["files"]["tmp_name"]);
 			if($check !== false)
 			{
 				//echo "File is an image - " . $check["mime"] . ".";
@@ -498,7 +449,7 @@
 		}
 
 		// Check file size
-		if ($_FILES["fileToUpload"]["size"] > 500000) {
+		if ($_FILES["files"]["size"] > 500000) {
 		    $uploadOk = 0;
 		    return array(400, "Sorry, your file is too large.");
 		}
@@ -513,8 +464,8 @@
 		    return array(400, "Sorry, your file was not uploaded.");
 		// if everything is ok, try to upload file
 		} else {
-		    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-		    	//return array(200, basename( $_FILES["fileToUpload"]["name"]))
+		    if (move_uploaded_file($_FILES["files"]["tmp_name"], $target_file)) {
+		    	//return array(200, basename( $_FILES["files"]["name"]))
 		    	return array(200, $target_file . $imageFileType);
 		    } else {
 		        return array(406, "Sorry, there was an error uploading your file.");
@@ -633,10 +584,10 @@
 	    
 	    if ($prepared_stmtForEmailValidation -> num_rows() === 0) {
 	        $prepared_stmtForEmailValidation -> close();
-	        return true;
+	        return false;
 	    } else {
 	        $prepared_stmtForEmailValidation -> close();
-	        return false;
+	        return true;
 	    }
 	}
 ?>

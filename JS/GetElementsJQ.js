@@ -21,34 +21,39 @@ $.ajax({
 								<p class="s2">
 									${data.response[i]['productName']}
 								</p>
+								<figure class="image is-4by3">
+            						<img id="pic${data.response[i]['productId']}" src="https://www.kingofmaids.com/blog/wp-content/uploads/2016/10/Carlisle-Versallia-Luxury-Vinyl-Plank-Flooring-Chesapeake-Room-3559_1082_617_80_c1-772x394.jpg">
+         	 					</figure>
 								<p class="s3">
-									${data.response[i]['productDescription']} 
+									Description: ${data.response[i]['productDescription']} 
 								</p>
 								<p class="s4">
-									${data.response[i]['productPrice']}										
+									Precio: $ ${data.response[i]['productPrice']} MXN.										
 	 							</p>
 	 							<button class="button is-rounded is-dark addPicProduct" id="${data.response[i]['productId']}">
 	 							Add Picture</button>
-	 							<div id="div${data.response[i]['productId']}" class="is-hidden">
-	 								Select image to upload:
-   	 								<input type="file" name="fileToUpload" id="fileToUpload">
-    								<input type="submit" value="Upload Image" name="submit">
-	 							</div>
 	 						</li>`;
 			}
 			$('#ProductsFloorsList').html(newHTMLFloor);
 
 			$('.addPicProduct').on("click", function(event){
 				event.preventDefault();
-				console.log($(this).attr('id'));
-				$('#div'+$(this).attr('id')).removeClass('is-hidden');
+				let idProdtogetpic=$(this).attr('id');
+				console.log(idProdtogetpic);
+				var url=idProdtogetpic;
+				var uri_enc = encodeURIComponent(url);
+				var url2= "html/uploadProduct.html?id="+ uri_enc;
+				console.log(url2);
+   	 			window.location.href=url2;
 			});
 		}
 	},
-	error : function(error){
+
+		error : function(error){
 		console.log(error);
 	}
 });
+
 
 
 

@@ -1,6 +1,6 @@
 <nav class="navbar" role="navigation" aria-label="main navigation">
 	<div class="navbar-brand">
-		<img src="./Images/OSTRIKA.png" width="170" height="28">
+		<img src="./images/OSTRIKA.png" width="170" height="28">
 	</div>
 	<div id="navbarOstrika" class="navbar-menu">
 		<div class="navbar-start" id="MENU">
@@ -46,10 +46,12 @@
 			  </span>
  				  </button>
 	  	</div>	
+	   	<div class="navbar-item">	
+	  	<p class="is-size-5	has-text-grey"></p>
+	  	</div>
 	    <div class="navbar-item">
-	      <div class="buttons">
-	        <button id="buttonSignUp" class="button is-dark is-rounded"> <strong> Sign up </strong> </button>
-	        <button id="buttonLogIn"class="button is-light is-rounded">  Log in  </button>
+	      <div class="buttons">       
+	        <button id="buttonLogOut"class="button is-light is-rounded">  Log Out  </button>
 	      </div>
 	    </div>
 	  </div>

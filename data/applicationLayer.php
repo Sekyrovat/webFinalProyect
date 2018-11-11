@@ -123,7 +123,7 @@
 			$_SESSION['userId'] = $response['response'];
 			echo json_encode(array( 'status' => $response['status'], 'code' => $response['code'], 'response' => $response['response']));
 		} else {
-			errorHandler(array($response["status"], $response["code"]));
+			errorHandler($response["status"], $response["code"]);
 		}
 	}
 	/**

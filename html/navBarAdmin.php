@@ -1,6 +1,6 @@
 <nav class="navbar" role="navigation" aria-label="main navigation">
 	<div class="navbar-brand">
-		<img src="./Images/OSTRIKA.png" width="170" height="28">
+		<img src="./images/OSTRIKA.png" width="170" height="28">
 	</div>
 	<div id="navbarOstrika" class="navbar-menu">
 		<div class="navbar-start" id="MENU">
